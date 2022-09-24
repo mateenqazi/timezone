@@ -1,23 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import DropDown from "./components/DropDown";
+import Information from "./components/Information";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 function App() {
+  const [timezone, setTimeZone] = useState([]);
+  const [selectedTimeZone, setSelectedTimeZone] = useState("");
+  useEffect(() => {
+    axios
+      .get("http://worldtimeapi.org/api/timezone")
+      .then((res) => {
+        setTimeZone(res.data);
+        setSelectedTimeZone(res.data.filter((r) => r === "Asia/Karachi")[0]);
+      })
+      .catch((err) => {
+        setTimeZone([]);
+        setSelectedTimeZone("Asia/Karachi");
+        console.log("ERROR", err);
+      });
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <DropDown
+        timezone={timezone}
+        selectedTimeZone={selectedTimeZone}
+        setSelectedTimeZone={setSelectedTimeZone}
+      />
+      <Information selectedTimeZone={selectedTimeZone} />
     </div>
   );
 }
